@@ -22,16 +22,16 @@ CREATE TABLE Doctors (
 );
 
 CREATE TABLE Prescriptions (
-    PrescriptionID INT PRIMARY KEY,
+    PrescriptionID INT PRIMARY KEY AUTO_INCREMENT,
     PatientID INT,
     DoctorID INT,
     DateIssued DATE,
     DateValidUntil DATE,
     Instructions TEXT,
-    Status ENUM('pending', 'fulfilled'),
-    SentToPatient BOOLEAN DEFAULT FALSE,
+    RequestID INT,
     FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
-    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID),
+    FOREIGN KEY (RequestID) REFERENCES PrescriptionRequests(RequestID)
 );
 
 CREATE TABLE Medications (
@@ -64,4 +64,20 @@ CREATE TABLE PrescribedMedications (
     PRIMARY KEY (PrescriptionID, MedicationID)
 );
 
+CREATE TABLE DoctorPasswords (
+    DoctorID INT PRIMARY KEY,
+    PasswordHash VARCHAR(255),
+    LastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
+);
 
+CREATE TABLE PatientPasswords (
+    PatientID INT PRIMARY KEY,
+    PasswordHash VARCHAR(255),
+    LastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID)
+);
+
+ALTER TABLE Prescriptions
+ADD COLUMN Quantity INT,
+ADD COLUMN Frequency VARCHAR(255);
